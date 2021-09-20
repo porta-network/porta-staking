@@ -7,7 +7,6 @@ pragma solidity ^0.8.0;
 // @title PortaStake Interface
 // @author Alisina Bahadori
 interface IPortaAdmin {
-
     /*---------------------*\
     |  Interface functions  |
     \*---------------------*/
