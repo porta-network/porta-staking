@@ -20,9 +20,7 @@ async function main() {
   now = Math.floor(Date.now() / 1000)
   start = now + 60
 
-  await portaStake.setupCampaign(onetoken.mul(5000), onetoken.mul(5000), start, start +  7 * 86400, 86400, onetoken.mul(1000000), {
-        gasLimit: 90000000
-    });
+  await portaStake.setupCampaign(5000, onetoken.mul(1000), start, start +  7 * 86400, 86400, onetoken.mul(100));
 
   console.log("Campaign Activated");
 }
