@@ -12,11 +12,19 @@ async function main() {
   // If this script is run directly using `node` you may want to call compile
   // manually to make sure everything is compiled
   // await hre.run('compile');
-  const PortaStake = await hre.ethers.getContractFactory("PortaStake")
-  portaStake = await PortaStake.deploy(process.env.STAKE_TOKEN_ADDRESS)
-  await portaStake.deployed()
 
-  console.log("PortaStake Deployed To:", portaStake.address);
+  const onetoken = hre.ethers.BigNumber.from('1000000000000000000')
+  const PortaStake = await hre.ethers.getContractFactory("PortaStake")
+  portaStake = await PortaStake.attach(process.env.PORTA_STAKE_ADDRESS)
+
+  now = Math.floor(Date.now() / 1000)
+  start = now + 60
+
+  await portaStake.setupCampaign(onetoken.mul(5000), onetoken.mul(5000), start, start +  7 * 86400, 86400, onetoken.mul(1000000), {
+        gasLimit: 90000000
+    });
+
+  console.log("Campaign Activated");
 }
 
 // We recommend this pattern to be able to use async/await everywhere

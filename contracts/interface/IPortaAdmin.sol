@@ -26,8 +26,13 @@ interface IPortaAdmin {
         uint256 maxTokens,
         uint256 startAt,
         uint256 endAt,
-        uint256 minStakeDuration
+        uint256 minStakeDuration,
+        uint256 maxStakePerAddress
     ) external;
+
+    // @notice Returns true if campaign is in active mode and false if campaign is deactivated.
+    // @return isActive Determines if a campaign is activated.
+    function isCampaignActive() external view returns (bool isActive);
 
     /*--------*\
     |  Events  |
