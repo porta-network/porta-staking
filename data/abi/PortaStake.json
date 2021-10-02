@@ -107,6 +107,25 @@
         "type": "uint256"
       }
     ],
+    "name": "RewardClaim",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
     "name": "StakeChange",
     "type": "event"
   },
@@ -206,25 +225,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
-    ],
-    "name": "calculateReward",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "unclaimedReward",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "stakedAmount",
         "type": "uint256"
@@ -238,11 +238,6 @@
         "internalType": "uint256",
         "name": "endAt",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "apr",
-        "type": "uint256"
       }
     ],
     "name": "calculateRewardAt",
@@ -253,7 +248,33 @@
         "type": "uint256"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "claimReward",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "claimableReward",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "claimableReward",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -290,7 +311,26 @@
         "type": "address"
       }
     ],
-    "name": "lockStatus",
+    "name": "liveReward",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "liveReward",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "lockedUntil",
     "outputs": [
       {
         "internalType": "uint256",

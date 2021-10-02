@@ -19,10 +19,18 @@ interface IPortaStake {
     // @param amount How much of the fungible token to unstake.
     function withdrawStake(uint256 amount) external;
 
+    // @notice Calculates the current reward for an owner. May not be claimable.
+    // @param owner Address of the stake owner to calculate rewards for.
+    // @return unclaimedReward The amount of reward which is not yet claimed.
+    function liveReward(address owner)
+        external
+        view
+        returns (uint256 unclaimedReward);
+
     // @notice Calculates the unclaimed reward for an owner.
     // @param owner Address of the stake owner to calculate rewards for.
     // @return unclaimedReward The amount of reward which is not yet claimed.
-    function calculateReward(address owner)
+    function claimableReward(address owner)
         external
         view
         returns (uint256 unclaimedReward);
@@ -30,7 +38,7 @@ interface IPortaStake {
     // @notice Returns the stake lock status for an owner.
     // @param owner Address of the stake owner to fetch lock status for.
     // @return lockedUntil The minimum time when withdrawal is possible.
-    function lockStatus(address owner)
+    function lockedUntil(address owner)
         external
         view
         returns (uint256 lockedUntil);
@@ -41,4 +49,7 @@ interface IPortaStake {
 
     // @notice When the stake amount for an owner is changed.
     event StakeChange(address indexed owner, uint256 amount);
+
+    // @notice When the reward is claimed for the user.
+    event RewardClaim(address indexed owner, uint256 amount);
 }

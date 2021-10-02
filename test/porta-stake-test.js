@@ -29,7 +29,7 @@ describe("PortaStake", function () {
   it("Deposit in active campaign", async function () {
     await erc20Token.transfer(portaStake.address, 10000)
 
-    await portaStake.setupCampaign(5000, 10000, tomorrow(), tomorrow() + days(1), days(1), 10000)
+    await portaStake.setupCampaign(5000, 10000, tomorrow(), tomorrow() + days(100), days(1), 10000)
 
     var snapId = await ethers.provider.send('evm_snapshot');
     await ethers.provider.send('evm_increaseTime', [days(1)]);
@@ -40,12 +40,12 @@ describe("PortaStake", function () {
     await ethers.provider.send('evm_increaseTime', [days(10)]);
     await ethers.provider.send('evm_mine');
 
-    expect(await portaStake.calculateReward(owner.address)).to.be.equal(136);
+    expect(await portaStake.liveReward(owner.address)).to.be.equal(136);
 
     await ethers.provider.send('evm_increaseTime', [hours(4)]);
     await ethers.provider.send('evm_mine');
 
-    expect(await portaStake.calculateReward(owner.address)).to.be.equal(139);
+    expect(await portaStake.liveReward(owner.address)).to.be.equal(139);
 
     await ethers.provider.send('evm_revert', [snapId])
   })
