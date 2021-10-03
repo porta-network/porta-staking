@@ -9,7 +9,5 @@ struct StakeHolderInfo {
     uint256 lastTimestamp;
     // How much is the current stake.
     uint256 stakeAmount;
-    // How much can user withdraw if he/she stays until the end of campaign.
-    uint256 endWithdrawAmount;
 }
 

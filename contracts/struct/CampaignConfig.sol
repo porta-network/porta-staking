@@ -17,6 +17,8 @@ struct CampaignConfig {
     uint256 minStakeDuration;
     // Maximum number of tokens that can be staked per address.
     uint256 maxStakePerAddress;
+    // Minimum number of tokens that can be staked per address.
+    uint256 minStakePerAddress;
 }
 
 

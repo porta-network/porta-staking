@@ -13,11 +13,28 @@ async function main() {
   // manually to make sure everything is compiled
   // await hre.run('compile');
   const PortaStakeHub = await hre.ethers.getContractFactory("PortaStakeHub")
-  console.log("Stake token address:", process.env.STAKE_TOKEN_ADDRESS)
-  portaStakeHub = await PortaStakeHub.deploy(process.env.STAKE_TOKEN_ADDRESS)
-  await portaStakeHub.deployed()
+  const portaStakeHub = await PortaStakeHub.attach(process.env.PORTA_STAKE_HUB)
 
-  console.log("PortaStake Deployed To:", portaStakeHub.address);
+  console.log(wei(1))
+  const campaignAddress = await portaStakeHub.newCampaign(
+    5000,
+    wei(1000),
+    now() + 60,
+    now() + 86460,
+    300,
+    wei(1),
+    wei(500)
+  );
+
+  console.log("Campaign created", campaignAddress);
+}
+
+function now() {
+  return Math.floor(Date.now() / 1000);
+}
+
+function wei(amount) {
+  return ethers.BigNumber.from(ethers.utils.parseEther(amount.toString()))
 }
 
 // We recommend this pattern to be able to use async/await everywhere

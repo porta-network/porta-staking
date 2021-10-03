@@ -7,9 +7,9 @@ pragma solidity ^0.8.0;
 // @title PortaStake Interface
 // @author Alisina Bahadori
 interface IPortaStake {
-    /*---------------------*\
-    |  Interface functions  |
-    \*---------------------*/
+    /*---------*\
+    |  Actions  |
+    \*---------*/
 
     // @notice Stakes amount of token into the contract.
     // @param amount How much of the fungible token to deposit for staking.
@@ -19,21 +19,35 @@ interface IPortaStake {
     // @param amount How much of the fungible token to unstake.
     function withdrawStake(uint256 amount) external;
 
+    // @notice Claims the claimable reward for the sender.
+    function claimReward() external returns (uint256 claimedReward);
+
+    // @notice Withdraws all non-locked token only after the campaign ends.
+    function finalWithdraw() external;
+
+    /*-------*\
+    |  Views  |
+    \*-------*/
+
+    // @notice Returns true if there is an active campaign.
+    // @return isActive if the campaign is active.
+    function isCampaignActive() external returns (bool isActive);
+
     // @notice Calculates the current reward for an owner. May not be claimable.
     // @param owner Address of the stake owner to calculate rewards for.
-    // @return unclaimedReward The amount of reward which is not yet claimed.
+    // @return liveReward The amount live reward for address.
     function liveReward(address owner)
         external
         view
-        returns (uint256 unclaimedReward);
+        returns (uint256 reward);
 
     // @notice Calculates the unclaimed reward for an owner.
     // @param owner Address of the stake owner to calculate rewards for.
-    // @return unclaimedReward The amount of reward which is not yet claimed.
+    // @return claimableReward The amount of reward available to claim.
     function claimableReward(address owner)
         external
         view
-        returns (uint256 unclaimedReward);
+        returns (uint256 reward);
 
     // @notice Returns the stake lock status for an owner.
     // @param owner Address of the stake owner to fetch lock status for.
@@ -41,7 +55,7 @@ interface IPortaStake {
     function lockedUntil(address owner)
         external
         view
-        returns (uint256 lockedUntil);
+        returns (uint256 unlocksAt);
 
     /*--------*\
     |  Events  |
@@ -52,4 +66,7 @@ interface IPortaStake {
 
     // @notice When the reward is claimed for the user.
     event RewardClaim(address indexed owner, uint256 amount);
+
+    // @notice When the reward is claimed for the user.
+    event FinalWithdraw(address indexed owner, uint256 amount);
 }

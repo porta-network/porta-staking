@@ -15,11 +15,24 @@ describe("PortaStake", function () {
     erc20Token = await MockedERC20Token.deploy(10000000)
     await erc20Token.deployed()
 
+    const PortaStakeHub = await ethers.getContractFactory("PortaStakeHub")
     const PortaStake = await ethers.getContractFactory("PortaStake")
-    portaStake = await PortaStake.deploy(erc20Token.address)
-    await portaStake.deployed()
 
-    await erc20Token.approve(portaStake.address, 10000000)
+    portaStakeHub = await PortaStakeHub.deploy(erc20Token.address)
+    await portaStakeHub.deployed()
+
+    await erc20Token.approve(portaStakeHub.address, 10000000)
+
+    //const campaignContract = await portaStakeHub.newCampaign(5000, 10000, tomorrow(), tomorrow() + 24 * 60 * 60, 24 * 60 * 60, 0, 500000)
+
+    const stakeAddress = await portaStakeHub.newCampaign(
+      5000,
+      10000,
+      now(),
+
+    )
+
+    portaStake = PortaStake.attach(stakeAddress)
   })
 
   it("Should not allow deposits without active campaigns", async function () {

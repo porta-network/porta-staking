@@ -5,6 +5,41 @@
         "internalType": "address",
         "name": "stakeToken",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "apr",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxTokens",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "startAt",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "endAt",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minStakeDuration",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minStakePerAddress",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxStakePerAddress",
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
@@ -16,7 +51,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "admin",
+        "name": "owner",
         "type": "address"
       },
       {
@@ -26,50 +61,7 @@
         "type": "uint256"
       }
     ],
-    "name": "AdminWithdraw",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "admin",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "apr",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "maxTokens",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "startAt",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "endAt",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "minStakeDuration",
-        "type": "uint256"
-      }
-    ],
-    "name": "CampaignSetup",
+    "name": "FinalWithdraw",
     "type": "event"
   },
   {
@@ -130,8 +122,45 @@
     "type": "event"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "_stakeHolderInfo",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "lastTimestamp",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "stakeAmount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
-    "name": "_campaignConfig",
+    "name": "availableTokens",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "campaignConfig",
     "outputs": [
       {
         "internalType": "uint256",
@@ -162,89 +191,23 @@
         "internalType": "uint256",
         "name": "maxStakePerAddress",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "_stakeHolderInfo",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "lastTimestamp",
-        "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "stakeAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "endWithdrawAmount",
+        "name": "minStakePerAddress",
         "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "adminWithdraw",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "availableTokens",
+    "name": "campaignStakedTokens",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "stakedAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "startAt",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "endAt",
-        "type": "uint256"
-      }
-    ],
-    "name": "calculateRewardAt",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "reward",
+        "name": "",
         "type": "uint256"
       }
     ],
@@ -254,7 +217,13 @@
   {
     "inputs": [],
     "name": "claimReward",
-    "outputs": [],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "claimedReward",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -270,7 +239,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "claimableReward",
+        "name": "",
         "type": "uint256"
       }
     ],
@@ -286,6 +255,13 @@
       }
     ],
     "name": "depositStake",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "finalWithdraw",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -315,7 +291,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "liveReward",
+        "name": "",
         "type": "uint256"
       }
     ],
@@ -334,7 +310,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "lockedUntil",
+        "name": "",
         "type": "uint256"
       }
     ],
@@ -365,12 +341,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "apr",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "maxTokens",
+        "name": "stakedAmount",
         "type": "uint256"
       },
       {
@@ -385,18 +356,24 @@
       },
       {
         "internalType": "uint256",
-        "name": "minStakeDuration",
+        "name": "apr",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "maxStakePerAddress",
+        "name": "campaignEndAt",
         "type": "uint256"
       }
     ],
-    "name": "setupCampaign",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "name": "rewardAt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "pure",
     "type": "function"
   },
   {
