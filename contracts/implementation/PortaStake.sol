@@ -5,8 +5,8 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
+import "../implementation/CreatorOwnable.sol";
 import "../interface/IPortaStake.sol";
 import "../struct/CampaignConfig.sol";
 import "../struct/StakeHolderInfo.sol";
@@ -14,7 +14,7 @@ import "../utils/PortaUtils.sol";
 
 // @title PortaStake Contract
 // @author Alisina Bahadori
-contract PortaStake is IPortaStake, PortaUtils, Ownable {
+contract PortaStake is IPortaStake, PortaUtils, CreatorOwnable {
 
     /*-----------*\
     |  Constants  |
