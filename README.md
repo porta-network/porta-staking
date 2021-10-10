@@ -2,6 +2,8 @@
 
 This project has the porta staking contract implementation in solidity.
 
+![example workflow](https://github.com/porta-network/porta-staking/actions/workflows/hardhat_ci.yaml/badge.svg)
+
 **THIS Is Currently a WIP**
 
 ## How to run
