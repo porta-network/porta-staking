@@ -17,13 +17,14 @@ async function main() {
 
   console.log(wei(1))
   const campaignAddress = await portaStakeHub.newCampaign(
-    5000,
+    "Second Campaign",
+    3000,
     wei(1000),
-    now() + 60,
-    now() + 86460,
-    300,
-    wei(1),
-    wei(500)
+    now() + 86400 * 2,
+    now() + 86460 * 30,
+    3 * 86400,
+    wei(5),
+    wei(300)
   );
 
   console.log("Campaign created", campaignAddress);

@@ -17,7 +17,7 @@ async function main() {
   portaStakeHub = await PortaStakeHub.deploy(process.env.STAKE_TOKEN_ADDRESS)
   await portaStakeHub.deployed()
 
-  console.log("PortaStake Deployed To:", portaStakeHub.address);
+  console.log("PortaStakeHub Deployed To:", portaStakeHub.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
