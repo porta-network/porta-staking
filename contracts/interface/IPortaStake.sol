@@ -33,6 +33,23 @@ interface IPortaStake {
     // @return isActive if the campaign is active.
     function isCampaignActive() external returns (bool isActive);
 
+    // @notice Returns account information for dapps. This function should not
+    // be used internally or by smart contracts as it consumes lots of gas.
+    // @param owner The account address to get the info for.
+    // @return stakeAmount the amount of staked tokens.
+    // @return claimableReward amount of reward available to claim.
+    // @return liveReward total amount of reward at this point in time.
+    // @return lockedUntil Until when the withdrawal is locked for the owner.
+    function accountInfo(address owner)
+        external
+        view
+        returns (
+            uint256 stakeAmount,
+            uint256 claimableRewardAmount,
+            uint256 liveRewardAmount,
+            uint256 unlocksAt
+        );
+
     // @notice Calculates the current reward for an owner. May not be claimable.
     // @param owner Address of the stake owner to calculate rewards for.
     // @return liveReward The amount live reward for address.

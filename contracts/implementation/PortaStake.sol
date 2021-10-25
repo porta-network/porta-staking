@@ -202,6 +202,27 @@ contract PortaStake is IPortaStake, PortaUtils, CreatorOwnable {
         );
     }
 
+    function accountInfo(address owner)
+        external
+        view
+        override
+        returns (
+            uint256 stakeAmount,
+            uint256 claimableRewardAmount,
+            uint256 liveRewardAmount,
+            uint256 unlocksAt
+        )
+    {
+        StakeHolderInfo memory shi = _stakeHolderInfo[owner];
+        // Return zeros immediately if stake is zero
+        if (shi.stakeAmount == 0) return (0, 0, 0, 0);
+
+        stakeAmount = shi.stakeAmount;
+        claimableRewardAmount = claimableReward(owner);
+        liveRewardAmount = liveReward(owner);
+        unlocksAt = lockedUntil(owner);
+    }
+
     function endWithdrawAmount(StakeHolderInfo memory shi) internal view returns (uint256) {
         // Reward + Initial Stake
         return rewardAt(

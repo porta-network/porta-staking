@@ -131,7 +131,35 @@ describe("PortaStake", function () {
       .equal(beforeClaimBalance.add(10000).add(reward));
 
     await ethers.provider.send('evm_revert', [snapId])
+  })
 
+  it('Can get account info via accountInfo function', async function () {
+    await erc20Token.approve(portaStake.address, 10000000)
+
+    var snapId = await ethers.provider.send('evm_snapshot');
+    await ethers.provider.send('evm_increaseTime', [days(1)]);
+    await ethers.provider.send('evm_mine');
+
+    await portaStake.depositStake(10000);
+
+    var accountInfo = await portaStake.accountInfo(owner.address);
+
+    expect(accountInfo.stakeAmount).to.be.equal(10000)
+    expect(accountInfo.claimableRewardAmount).to.be.equal(0)
+    expect(accountInfo.liveRewardAmount).to.be.equal(0)
+    expect(accountInfo.unlocksAt).to.be.above(days(1) - 60)
+
+    await ethers.provider.send('evm_increaseTime', [days(3)]);
+    await ethers.provider.send('evm_mine');
+
+    accountInfo = await portaStake.accountInfo(owner.address);
+
+    expect(accountInfo.stakeAmount).to.be.equal(10000)
+    expect(accountInfo.claimableRewardAmount).to.be.equal(38)
+    expect(accountInfo.liveRewardAmount).to.be.equal(41)
+    expect(accountInfo.unlocksAt).to.be.below(now())
+
+    await ethers.provider.send('evm_revert', [snapId])
   })
 });
 
