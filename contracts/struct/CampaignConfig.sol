@@ -5,6 +5,8 @@
 pragma solidity ^0.8.0;
 
 struct CampaignConfig {
+    // Title of the campaign.
+    string title;
     // APR of active campaign.
     uint256 apr;
     // How many tokens should be given away in case of max contribution.

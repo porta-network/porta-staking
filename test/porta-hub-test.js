@@ -23,11 +23,11 @@ describe("PortaStakeHub", function () {
   it("Should accept campaign setup from administrator", async function () {
     await erc20Token.transfer(portaStakeHub.address, 10000)
 
-    const campaignContract = await portaStakeHub.newCampaign(5000, 10000, tomorrow(), tomorrow() + 24 * 60 * 60, 24 * 60 * 60, 0, 500000)
+    const campaignContract = await portaStakeHub.newCampaign("The title", 5000, 10000, tomorrow(), tomorrow() + 24 * 60 * 60, 24 * 60 * 60, 0, 500000)
   });
 
   it("Should not accept campaign setup with insufficient balance", async function () {
-    await expect(portaStakeHub.newCampaign(5000, 10000, tomorrow(), tomorrow() + 24 * 60 * 60, 24 * 60 * 60, 0, 100)).to.be.revertedWith('PortaStakeHub: Insufficient tokens for campaign')
+    await expect(portaStakeHub.newCampaign("The title", 5000, 10000, tomorrow(), tomorrow() + 24 * 60 * 60, 24 * 60 * 60, 0, 100)).to.be.revertedWith('PortaStakeHub: Insufficient tokens for campaign')
   });
 
   it("Should let admin to withdraw all the amount left in the contract", async function() {
@@ -35,7 +35,7 @@ describe("PortaStakeHub", function () {
 
     await portaStakeHub.adminWithdraw(100)
 
-    await portaStakeHub.newCampaign(10000, 10000, tomorrow(), tomorrow() + 365 * 24 * 60 * 60, 24 * 60 * 60, 0, 1000)
+    await portaStakeHub.newCampaign("The title", 10000, 10000, tomorrow(), tomorrow() + 365 * 24 * 60 * 60, 24 * 60 * 60, 0, 1000)
 
     await portaStakeHub.adminWithdraw(100)
     await expect(portaStakeHub.adminWithdraw(100)).to.be.revertedWith("ERC20: transfer amount exceeds balance")

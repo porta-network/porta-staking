@@ -60,6 +60,11 @@
   {
     "inputs": [
       {
+        "internalType": "string",
+        "name": "title",
+        "type": "string"
+      },
+      {
         "internalType": "uint256",
         "name": "apr",
         "type": "uint256"

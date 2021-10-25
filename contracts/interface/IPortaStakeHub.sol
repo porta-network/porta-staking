@@ -22,6 +22,7 @@ interface IPortaStakeHub {
     // @param endAt When the campaign releases the lock and stops rewarding.
     // @param minStakeDuration Minimum time required for stake to be withdraw-able.
     function newCampaign(
+        string memory title,
         uint256 apr,
         uint256 maxTokens,
         uint256 startAt,

@@ -35,6 +35,7 @@ contract PortaStake is IPortaStake, PortaUtils, CreatorOwnable {
     uint256 public campaignStakedTokens = 0;
 
     constructor(
+        string memory title,
         address stakeToken,
         uint256 apr,
         uint256 maxTokens,
@@ -54,6 +55,7 @@ contract PortaStake is IPortaStake, PortaUtils, CreatorOwnable {
         require(maxStakePerAddress >= minStakePerAddress, "PortaStake: Bad Min/Max configuration.");
         require(maxStakePerAddress > 0, "PortaStake: Max Address Stake should be greater than 0");
 
+        campaignConfig.title = title;
         campaignConfig.apr = apr;
         campaignConfig.maxTokens = maxTokens;
         campaignConfig.startAt = startAt;

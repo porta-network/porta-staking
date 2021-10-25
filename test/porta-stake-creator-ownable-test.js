@@ -23,7 +23,7 @@ describe("PortaStake CreatorOwnable", function () {
     await erc20Token.transfer(portaStakeHub.address, 10000)
 
     const PortaStake = await ethers.getContractFactory("PortaStake")
-    await portaStakeHub.newCampaign(5000, 10000, tomorrow(), tomorrow() + 24 * 60 * 60, 24 * 60 * 60, 0, 500000)
+    await portaStakeHub.newCampaign("The title", 5000, 10000, tomorrow(), tomorrow() + 24 * 60 * 60, 24 * 60 * 60, 0, 500000)
     portaStakeAddresses = await portaStakeHub.listVaults()
     portaStake = PortaStake.attach(portaStakeAddresses[0])
   })

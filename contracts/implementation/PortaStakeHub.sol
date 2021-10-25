@@ -39,6 +39,7 @@ contract PortaStakeHub is IPortaStakeHub, PortaUtils, Ownable {
     }
 
     function newCampaign(
+        string memory title,
         uint256 apr,
         uint256 maxTokens,
         uint256 startAt,
@@ -48,6 +49,7 @@ contract PortaStakeHub is IPortaStakeHub, PortaUtils, Ownable {
         uint256 maxStakePerAddress
     ) external override onlyOwner returns (address stakeContractAddress) {
         PortaStake portaStake = new PortaStake(
+            title,
             address(_stakeToken),
             apr,
             maxTokens,

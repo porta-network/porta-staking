@@ -23,7 +23,7 @@ describe("PortaStake", function () {
     await erc20Token.transfer(portaStakeHub.address, 10000)
 
     const PortaStake = await ethers.getContractFactory("PortaStake")
-    await portaStakeHub.newCampaign(
+    await portaStakeHub.newCampaign("The title",
       // APR
       5000,
       // Max Tokens
@@ -42,6 +42,11 @@ describe("PortaStake", function () {
 
     portaStakeAddresses = await portaStakeHub.listVaults()
     portaStake = PortaStake.attach(portaStakeAddresses[0])
+  })
+
+  it("Should return campaign config", async function () {
+    const config = await portaStake.campaignConfig()
+    expect(config[0]).to.be.eq("The title")
   })
 
   it("Should not allow deposits without active campaigns", async function () {
@@ -87,7 +92,7 @@ describe("PortaStake", function () {
     const claimableReward = await portaStake.claimableReward(owner.address)
 
     expect(liveReward).to.be.equal(136);
-    expect(claimableReward).to.be.below(liveReward);
+    expect(claimableReward).to.be.at.most(liveReward);
 
     const beforeClaimBalance = await erc20Token.balanceOf(owner.address)
     await portaStake.claimReward();
