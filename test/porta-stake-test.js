@@ -155,7 +155,7 @@ describe("PortaStake", function () {
     accountInfo = await portaStake.accountInfo(owner.address);
 
     expect(accountInfo.stakeAmount).to.be.equal(10000)
-    expect(accountInfo.claimableRewardAmount).to.be.equal(38)
+    expect(accountInfo.claimableRewardAmount).to.be.equal(37)
     expect(accountInfo.liveRewardAmount).to.be.equal(41)
     expect(accountInfo.unlocksAt).to.be.below(now())
 
