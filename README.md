@@ -1,23 +1,23 @@
 # Porta Staking
 
-This project has the porta staking contract implementation in solidity.
+A Staking platform made for the porta network token holders.
 
 ![example workflow](https://github.com/porta-network/porta-staking/actions/workflows/hardhat_ci.yaml/badge.svg)
 
 ## How to run the tests
 
-Currently you can run the tests with.
+You can run the tests with.
 
 ```
 npm i
 npx hardhat test
 ```
 
-## Deployment and campaign creation
+## Deployment and Vault lifecycle
 
-After deploying the `PortaStakeHub` contract to the network, You can start creating campaigns.
+After deploying the `PortaStakeHub` contract to the network, You can start creating vaults (AKA campaigns).
 
-In order to create a campaign you will need to send some tokens to the contract.
+In order to create a vault you will need to send some tokens to the contract.
 Let's say you want to create a new contract from 10th of December until the end of 15th of December
 with an APR of 50% and max stakable tokens of 1000. (Max Stakable Tokens: Maximum amount of staked tokens in any moment in the contract)
 
@@ -33,7 +33,7 @@ So in our example this would be:
 1000 * 6 * 50 / 36500 = 8.2192
 ```
 
-This would be the least amount that the hub contract needs to create the campaign.
+This would be the least amount that the hub contract needs to create the vault.
 
 ## Components
 
@@ -44,6 +44,7 @@ This would be the least amount that the hub contract needs to create the campaig
  - [`MockedERC20Token.sol`](contracts/mock/MockedERC20Token.sol): A simple ERC20 token with a faucet. (For testing)
  - [`interface`](contracts/interface): Interfaces of contracts which is useful in integrations.
  - [`struct`](contracts/struct): Structures of data for the hub and vault contracts.
+ - [`data/abi`](data/abi): Contract ABIs ready to be used in json-rpc clients like web3js.
 
 ## Integration
 
