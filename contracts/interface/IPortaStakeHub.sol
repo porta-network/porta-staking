@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Unlicense
+// SPDX-License-Identifier: AGPL-3.0-or-later
 
 // IPortaStakeHub.sol -- Porta Staking Administration Interface
 

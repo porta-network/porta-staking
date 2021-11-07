@@ -50,3 +50,7 @@ This would be the least amount that the hub contract needs to create the campaig
 You can access the contract json abi in the `data/abi` directory. Also in case
 that you want to integrate it with another contract you can use the `IPortaStake.sol`
 and `IPortaStakeHub.sol` files.
+
+## LICENSE
+
+[AGPL 3.0](LICENSE) - GNU AFFERO GENERAL PUBLIC LICENSE

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Unlicense
+// SPDX-License-Identifier: AGPL-3.0-or-later
 
 // MockedERC20Token.sol -- A Mocked ERC20 Token for testing.
 
