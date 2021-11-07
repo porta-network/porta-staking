@@ -159,6 +159,78 @@ describe("PortaStake", function () {
     expect(accountInfo.liveRewardAmount).to.be.equal(41)
     expect(accountInfo.unlocksAt).to.be.below(now())
 
+    await ethers.provider.send('evm_increaseTime', [days(25)]);
+    await ethers.provider.send('evm_mine');
+
+    accountInfo = await portaStake.accountInfo(owner.address);
+
+    expect(accountInfo.stakeAmount).to.be.equal(10000)
+    expect(accountInfo.claimableRewardAmount).to.be.equal(273)
+    expect(accountInfo.liveRewardAmount).to.be.equal(273)
+    expect(accountInfo.unlocksAt).to.be.below(now())
+
+    await ethers.provider.send('evm_revert', [snapId])
+  })
+
+  it('Can withdraw excess amount only by the owner', async function () {
+    await erc20Token.approve(portaStake.address, 10000000)
+
+    var snapId = await ethers.provider.send('evm_snapshot');
+    await ethers.provider.send('evm_increaseTime', [days(1)]);
+    await ethers.provider.send('evm_mine');
+
+    await portaStake.depositStake(100);
+
+    const vaultBalance = await erc20Token.balanceOf(portaStake.address);
+
+    await ethers.provider.send('evm_increaseTime', [days(30)]);
+
+    await expect(portaStake.connect(user).finalWithdraw()).to.be
+      .revertedWith('Ownable: caller is not the owner');
+
+    await portaStake.finalWithdraw();
+
+    expect(await erc20Token.balanceOf(portaStake.address)).to.be
+      .within(100, vaultBalance);
+
+    await ethers.provider.send('evm_revert', [snapId])
+  })
+
+  it('Will not let new deposits after max tokens reached', async function () {
+    await erc20Token.approve(portaStake.address, 10000000)
+
+    var snapId = await ethers.provider.send('evm_snapshot');
+    await ethers.provider.send('evm_increaseTime', [days(1)]);
+    await ethers.provider.send('evm_mine');
+
+    await expect(portaStake.depositStake(10001)).to.be
+      .revertedWith('PortaStake: Campaign max tokens reached!');
+
+    await portaStake.depositStake(10000);
+
+    await expect(portaStake.depositStake(1)).to.be
+      .revertedWith('PortaStake: Campaign max tokens reached!');
+
+    await ethers.provider.send('evm_revert', [snapId])
+  })
+
+  it('Cannot deposit in deactivated campaign', async function () {
+    await erc20Token.approve(portaStake.address, 10000000)
+
+    await expect(portaStake.depositStake(100)).to.be
+      .revertedWith('PortaStake: Cannot deposit in deactivated campaign.');
+
+    var snapId = await ethers.provider.send('evm_snapshot');
+    await ethers.provider.send('evm_increaseTime', [days(1)]);
+    await ethers.provider.send('evm_mine');
+
+    await portaStake.depositStake(100);
+
+    await ethers.provider.send('evm_increaseTime', [days(30)]);
+
+    await expect(portaStake.depositStake(100)).to.be
+      .revertedWith('PortaStake: Cannot deposit in deactivated campaign.');
+
     await ethers.provider.send('evm_revert', [snapId])
   })
 });
