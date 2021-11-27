@@ -264,7 +264,12 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "reward",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "applicableTimestamp",
         "type": "uint256"
       }
     ],

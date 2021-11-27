@@ -138,12 +138,12 @@ contract PortaStake is IPortaStake, PortaUtils, CreatorOwnable {
         require(isCampaignActive(),
                 "PortaStake: Claim works for active campaign. Use withdraw after campaign ends");
 
-        uint256 claimableAmount = claimableReward(msg.sender);
+        (uint256 claimableAmount, uint256 applicableTimestamp)  = claimableReward(msg.sender);
 
         if (claimableAmount > 0) {
             StakeHolderInfo storage shi = _stakeHolderInfo[msg.sender];
 
-            shi.lastTimestamp = block.timestamp;
+            shi.lastTimestamp = applicableTimestamp;
             _lockedTokens -= claimableAmount;
 
             require(_stakeToken.transfer(msg.sender, claimableAmount));
@@ -186,17 +186,17 @@ contract PortaStake is IPortaStake, PortaUtils, CreatorOwnable {
         public
         view
         override
-        returns (uint256)
+        returns (uint256 reward, uint256 applicableTimestamp)
     {
         StakeHolderInfo memory shi = _stakeHolderInfo[owner];
 
-        uint256 applicable_rounds = (block.timestamp - REWARD_START) / REWARD_INTERVAL;
-        uint256 applicable_timestamp = REWARD_START + applicable_rounds * REWARD_INTERVAL;
+        uint256 applicableRounds = (block.timestamp - REWARD_START) / REWARD_INTERVAL;
+        applicableTimestamp = REWARD_START + applicableRounds * REWARD_INTERVAL;
 
-        return rewardAt(
+        reward = rewardAt(
           shi.stakeAmount,
           shi.lastTimestamp,
-          applicable_timestamp,
+          applicableTimestamp,
           campaignConfig.apr,
           campaignConfig.endAt
         );
@@ -218,7 +218,7 @@ contract PortaStake is IPortaStake, PortaUtils, CreatorOwnable {
         if (shi.stakeAmount == 0) return (0, 0, 0, 0);
 
         stakeAmount = shi.stakeAmount;
-        claimableRewardAmount = claimableReward(owner);
+        (claimableRewardAmount,) = claimableReward(owner);
         liveRewardAmount = liveReward(owner);
         unlocksAt = lockedUntil(owner);
     }

@@ -8,9 +8,25 @@ describe("PortaStake", function () {
   var erc20Token
   var owner
   var user
+  var snapShotId
 
   beforeEach(async function() {
     [owner, user] = await ethers.getSigners()
+
+    snapShotId = await ethers.provider.send('evm_snapshot');
+
+    const currentBlock = await ethers.provider.getBlock(await currentBlockNumber())
+    const REWARD_START = 1632679200
+    var toDate = new Date(REWARD_START * 1000)
+
+    while(toDate < currentBlock.timestamp * 1000) {
+      toDate = new Date(toDate.getTime() + 86400 * 1000)
+    }
+
+    const diffToReward = (toDate - currentBlock.timestamp * 1000) / 1000
+
+    await ethers.provider.send('evm_increaseTime', [diffToReward - hours(6)]);
+    await ethers.provider.send('evm_mine');
 
     const MockedERC20Token = await ethers.getContractFactory("MockedERC20Token")
     erc20Token = await MockedERC20Token.deploy(10000000)
@@ -29,9 +45,9 @@ describe("PortaStake", function () {
       // Max Tokens
       10000,
       // Start of staking
-      tomorrow(),
+      await tomorrow(),
       // End of staking
-      tomorrow() + days(20),
+      await tomorrow() + days(20),
       // Minimum stake duration per wallet
       days(1),
       // Minimum stake amount per wallet
@@ -43,6 +59,12 @@ describe("PortaStake", function () {
     portaStakeAddresses = await portaStakeHub.listVaults()
     portaStake = PortaStake.attach(portaStakeAddresses[0])
   })
+
+  afterEach(async function() {
+    await ethers.provider.send('evm_revert', [snapShotId])
+    await ethers.provider.send('evm_mine');
+  })
+
 
   it("Should return campaign config", async function () {
     const config = await portaStake.campaignConfig()
@@ -92,14 +114,22 @@ describe("PortaStake", function () {
     const claimableReward = await portaStake.claimableReward(owner.address)
 
     expect(liveReward).to.be.equal(136);
-    expect(claimableReward).to.be.at.most(liveReward);
+    expect(claimableReward.reward).to.be.at.most(liveReward);
+
+    const lockedUntil = await portaStake.lockedUntil(owner.address)
 
     const beforeClaimBalance = await erc20Token.balanceOf(owner.address)
     await portaStake.claimReward();
     const claimedAmount =
       await erc20Token.balanceOf(owner.address) - beforeClaimBalance
 
-    expect(claimedAmount).to.be.equal(claimableReward);
+    expect(claimedAmount).to.be.equal(claimableReward.reward);
+
+    const newLiveReward = await portaStake.liveReward(owner.address)
+    expect(newLiveReward).to.be.equal(liveReward - claimedAmount)
+
+    const newLockedUntil = await portaStake.lockedUntil(owner.address)
+    expect(newLockedUntil).to.be.equal(lockedUntil)
 
     await ethers.provider.send('evm_revert', [snapId])
   })
@@ -121,14 +151,14 @@ describe("PortaStake", function () {
     await ethers.provider.send('evm_increaseTime', [hours(24)]);
     await ethers.provider.send('evm_mine');
 
-    const reward = await portaStake.claimableReward(owner.address)
-    expect(reward).to.be.above(0);
+    const claimableReward = await portaStake.claimableReward(owner.address)
+    expect(claimableReward.reward).to.be.above(0);
 
     const beforeClaimBalance = await erc20Token.balanceOf(owner.address)
     await portaStake.withdrawStake(10000);
 
     expect(await erc20Token.balanceOf(owner.address)).to
-      .equal(beforeClaimBalance.add(10000).add(reward));
+      .equal(beforeClaimBalance.add(10000).add(claimableReward.reward));
 
     await ethers.provider.send('evm_revert', [snapId])
   })
@@ -155,9 +185,9 @@ describe("PortaStake", function () {
     accountInfo = await portaStake.accountInfo(owner.address);
 
     expect(accountInfo.stakeAmount).to.be.equal(10000)
-    expect(accountInfo.claimableRewardAmount).to.be.equal(37)
+    expect(accountInfo.claimableRewardAmount).to.be.equal(30)
     expect(accountInfo.liveRewardAmount).to.be.equal(41)
-    expect(accountInfo.unlocksAt).to.be.below(now())
+    expect(accountInfo.unlocksAt).to.be.below(await now())
 
     await ethers.provider.send('evm_increaseTime', [days(25)]);
     await ethers.provider.send('evm_mine');
@@ -167,7 +197,7 @@ describe("PortaStake", function () {
     expect(accountInfo.stakeAmount).to.be.equal(10000)
     expect(accountInfo.claimableRewardAmount).to.be.equal(273)
     expect(accountInfo.liveRewardAmount).to.be.equal(273)
-    expect(accountInfo.unlocksAt).to.be.below(now())
+    expect(accountInfo.unlocksAt).to.be.below(await now())
 
     await ethers.provider.send('evm_revert', [snapId])
   })
@@ -235,12 +265,26 @@ describe("PortaStake", function () {
   })
 });
 
-function tomorrow() {
-  return Math.floor(now() / 1000) + days(1)
+async function tomorrow() {
+  return Math.floor(await await now()) + days(1)
 }
 
-function now() {
-  return Date.now()
+async function currentBlockNumber() {
+  var blockNumber = await ethers.provider.getBlockNumber()
+  var currentBlock = await ethers.provider.getBlock(blockNumber)
+
+  while (currentBlock == null) {
+    blockNumber--;
+    currentBlock = await ethers.provider.getBlock(blockNumber)
+  }
+
+  return blockNumber
+}
+
+async function now() {
+  const currentBlock = await ethers.provider.getBlock(await currentBlockNumber())
+
+  return currentBlock.timestamp
 }
 
 function days(n) {

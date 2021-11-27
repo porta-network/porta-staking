@@ -61,10 +61,11 @@ interface IPortaStake {
     // @notice Calculates the unclaimed reward for an owner.
     // @param owner Address of the stake owner to calculate rewards for.
     // @return claimableReward The amount of reward available to claim.
+    // @return applicableTimestamp The applicable timestamp fot the claimable amount.
     function claimableReward(address owner)
         external
         view
-        returns (uint256 reward);
+        returns (uint256 reward, uint256 applicableTimestamp);
 
     // @notice Returns the stake lock status for an owner.
     // @param owner Address of the stake owner to fetch lock status for.
