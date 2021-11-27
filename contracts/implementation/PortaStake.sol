@@ -81,6 +81,7 @@ contract PortaStake is IPortaStake, PortaUtils, CreatorOwnable {
         // Add the stake to the users vault
         shi.stakeAmount += amount;
         shi.lastTimestamp = block.timestamp;
+        shi.lockedUntil = block.timestamp + campaignConfig.minStakeDuration;
 
         // Add to total staked tokens
         campaignStakedTokens += amount;
@@ -103,7 +104,7 @@ contract PortaStake is IPortaStake, PortaUtils, CreatorOwnable {
     function withdrawStake(uint256 amount) public override {
         StakeHolderInfo storage shi = _stakeHolderInfo[msg.sender];
         require(shi.stakeAmount > 0, "PortaStake: Insufficient balance");
-        require(shi.lastTimestamp + campaignConfig.minStakeDuration <= block.timestamp,
+        require(shi.lockedUntil <= block.timestamp,
                 "PortaStake: Minimum stake duration not satisfied");
 
         if (isCampaignActive()) {
@@ -112,7 +113,6 @@ contract PortaStake is IPortaStake, PortaUtils, CreatorOwnable {
                 // Reload the stake holder info
                 shi = _stakeHolderInfo[msg.sender];
         }
-
 
         require(amount <= shi.stakeAmount, "PortaStake: Insufficient balance");
 
@@ -138,7 +138,7 @@ contract PortaStake is IPortaStake, PortaUtils, CreatorOwnable {
         require(isCampaignActive(),
                 "PortaStake: Claim works for active campaign. Use withdraw after campaign ends");
 
-        (uint256 claimableAmount, uint256 applicableTimestamp)  = claimableReward(msg.sender);
+        (uint256 claimableAmount, uint256 applicableTimestamp) = claimableReward(msg.sender);
 
         if (claimableAmount > 0) {
             StakeHolderInfo storage shi = _stakeHolderInfo[msg.sender];
@@ -241,7 +241,7 @@ contract PortaStake is IPortaStake, PortaUtils, CreatorOwnable {
         returns (uint256)
     {
         StakeHolderInfo memory shi = _stakeHolderInfo[owner];
-        return shi.lastTimestamp + campaignConfig.minStakeDuration;
+        return shi.lockedUntil;
     }
 
     function availableTokens() public view returns (uint256 amount) {

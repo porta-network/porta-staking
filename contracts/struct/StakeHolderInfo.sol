@@ -9,5 +9,7 @@ struct StakeHolderInfo {
     uint256 lastTimestamp;
     // How much is the current stake.
     uint256 stakeAmount;
+    // When will the stake get unlocked.
+    uint256 lockedUntil;
 }
 
