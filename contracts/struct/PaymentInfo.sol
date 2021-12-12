@@ -9,5 +9,7 @@ struct PaymentInfo {
     uint256 amount;
     // Who is the receiver
     address recipient;
+    // Payment reference
+    uint256 payReference;
 }
 
