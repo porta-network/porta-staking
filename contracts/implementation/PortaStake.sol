@@ -104,10 +104,10 @@ contract PortaStake is IPortaStake, PortaUtils, CreatorOwnable {
     function withdrawStake(uint256 amount) public override {
         StakeHolderInfo storage shi = _stakeHolderInfo[msg.sender];
         require(shi.stakeAmount > 0, "PortaStake: Insufficient balance");
-        require(shi.lockedUntil <= block.timestamp,
-                "PortaStake: Minimum stake duration not satisfied");
 
         if (isCampaignActive()) {
+            require(shi.lockedUntil <= block.timestamp,
+                    "PortaStake: Minimum stake duration not satisfied");
             // Claim the rewards for the user before withdraw
             if(claimReward() > 0)
                 // Reload the stake holder info

@@ -3,6 +3,7 @@ const { ethers } = require("hardhat");
 
 describe("PortaStake", function () {
 
+  var PortaStake
   var portaStake
   var portaStakeHub
   var erc20Token
@@ -38,7 +39,7 @@ describe("PortaStake", function () {
 
     await erc20Token.transfer(portaStakeHub.address, 10000)
 
-    const PortaStake = await ethers.getContractFactory("PortaStake")
+    PortaStake = await ethers.getContractFactory("PortaStake")
     await portaStakeHub.newCampaign("The title",
       // APR
       5000,
@@ -161,6 +162,41 @@ describe("PortaStake", function () {
       .equal(beforeClaimBalance.add(10000).add(claimableReward.reward));
 
     await ethers.provider.send('evm_revert', [snapId])
+  })
+
+  it("Can withdraw after campaign ends", async function () {
+    await portaStakeHub.newCampaign("The title",
+      // APR
+      5000,
+      // Max Tokens
+      10000,
+      // Start of staking
+      await tomorrow(),
+      // End of staking
+      await tomorrow() + days(4),
+      // Minimum stake duration per wallet
+      days(3),
+      // Minimum stake amount per wallet
+      100,
+      // Maximum stake amount per wallet
+      500000
+    )
+
+    portaStakeAddresses = await portaStakeHub.listVaults()
+    portaStake = PortaStake.attach(portaStakeAddresses[1])
+
+    await erc20Token.approve(portaStake.address, 10000000)
+
+    var snapId = await ethers.provider.send('evm_snapshot');
+    await ethers.provider.send('evm_increaseTime', [days(3)]);
+    await ethers.provider.send('evm_mine');
+
+    await portaStake.depositStake(10000);
+
+    await ethers.provider.send('evm_increaseTime', [days(2)]);
+    await ethers.provider.send('evm_mine');
+
+    await portaStake.withdrawStake(10000);
   })
 
   it('Can get account info via accountInfo function', async function () {
