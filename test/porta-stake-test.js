@@ -199,6 +199,28 @@ describe("PortaStake", function () {
     await portaStake.withdrawStake(10000);
   })
 
+  it("Withdrawal after campaign end also claims the reward", async function () {
+    await erc20Token.approve(portaStake.address, 10000000)
+
+    var snapId = await ethers.provider.send('evm_snapshot');
+    await ethers.provider.send('evm_increaseTime', [days(2)]);
+    await ethers.provider.send('evm_mine');
+
+    await portaStake.depositStake(10000);
+
+    await ethers.provider.send('evm_increaseTime', [days(25)]);
+    await ethers.provider.send('evm_mine');
+
+    const balanceBeforeWithdraw = await erc20Token.balanceOf(owner.address)
+    const reward = await portaStake.liveReward(owner.address)
+
+    await portaStake.withdrawStake(10000);
+
+    const expectedValue = balanceBeforeWithdraw.add(10000).add(reward)
+
+    expect(await erc20Token.balanceOf(owner.address)).to.be.equal(expectedValue)
+  })
+
   it('Can get account info via accountInfo function', async function () {
     await erc20Token.approve(portaStake.address, 10000000)
 

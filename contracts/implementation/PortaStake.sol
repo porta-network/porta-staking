@@ -104,15 +104,13 @@ contract PortaStake is IPortaStake, PortaUtils, CreatorOwnable {
     function withdrawStake(uint256 amount) public override {
         StakeHolderInfo storage shi = _stakeHolderInfo[msg.sender];
         require(shi.stakeAmount > 0, "PortaStake: Insufficient balance");
+        require(shi.lockedUntil <= block.timestamp || !isCampaignActive(),
+                "PortaStake: Minimum stake duration not satisfied");
 
-        if (isCampaignActive()) {
-            require(shi.lockedUntil <= block.timestamp,
-                    "PortaStake: Minimum stake duration not satisfied");
-            // Claim the rewards for the user before withdraw
-            if(claimReward() > 0)
-                // Reload the stake holder info
-                shi = _stakeHolderInfo[msg.sender];
-        }
+        // Claim the rewards for the user before withdraw
+        if(_claimReward(msg.sender) > 0)
+          // Reload the stake holder info
+          shi = _stakeHolderInfo[msg.sender];
 
         require(amount <= shi.stakeAmount, "PortaStake: Insufficient balance");
 
@@ -138,20 +136,7 @@ contract PortaStake is IPortaStake, PortaUtils, CreatorOwnable {
         require(isCampaignActive(),
                 "PortaStake: Claim works for active campaign. Use withdraw after campaign ends");
 
-        (uint256 claimableAmount, uint256 applicableTimestamp) = claimableReward(msg.sender);
-
-        if (claimableAmount > 0) {
-            StakeHolderInfo storage shi = _stakeHolderInfo[msg.sender];
-
-            shi.lastTimestamp = applicableTimestamp;
-            _lockedTokens -= claimableAmount;
-
-            require(_stakeToken.transfer(msg.sender, claimableAmount));
-
-            emit RewardClaim(msg.sender, claimableAmount);
-        }
-
-        return claimableAmount;
+        return _claimReward(msg.sender);
     }
 
     function finalWithdraw() external override onlyOwner {
@@ -160,6 +145,23 @@ contract PortaStake is IPortaStake, PortaUtils, CreatorOwnable {
         uint256 amount = availableTokens();
         require(_stakeToken.transfer(owner(), amount));
         emit FinalWithdraw(msg.sender, amount);
+    }
+
+    function _claimReward(address owner) internal returns (uint256 claimedReward) {
+        (uint256 claimableAmount, uint256 applicableTimestamp) = claimableReward(owner);
+
+        if (claimableAmount > 0) {
+            StakeHolderInfo storage shi = _stakeHolderInfo[owner];
+
+            shi.lastTimestamp = applicableTimestamp;
+            _lockedTokens -= claimableAmount;
+
+            require(_stakeToken.transfer(owner, claimableAmount));
+
+            emit RewardClaim(owner, claimableAmount);
+        }
+
+        return claimableAmount;
     }
 
     /*----------------*\
@@ -190,8 +192,13 @@ contract PortaStake is IPortaStake, PortaUtils, CreatorOwnable {
     {
         StakeHolderInfo memory shi = _stakeHolderInfo[owner];
 
-        uint256 applicableRounds = (block.timestamp - REWARD_START) / REWARD_INTERVAL;
-        applicableTimestamp = REWARD_START + applicableRounds * REWARD_INTERVAL;
+        if (isCampaignActive()) {
+          uint256 applicableRounds = (block.timestamp - REWARD_START) / REWARD_INTERVAL;
+          applicableTimestamp = REWARD_START + applicableRounds * REWARD_INTERVAL;
+        } else {
+          // Inactive campaign
+          applicableTimestamp = campaignConfig.endAt;
+        }
 
         reward = rewardAt(
           shi.stakeAmount,
